@@ -1,0 +1,19 @@
+version: "1.0"
+
+jurisdictions:
+  - england
+  - wales
+  - uk
+  - london
+
+supported_domains:
+  - eviction
+  - landlord
+  - tenant
+  - rent
+  - job
+  - employer
+  - work
+  - visa
+  - immigration
+  - asylum

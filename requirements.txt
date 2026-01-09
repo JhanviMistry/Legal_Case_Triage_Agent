@@ -1,0 +1,26 @@
+# Core backend
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+pydantic==2.6.4
+
+# LLM / Agent framework
+openai>=1.14.0
+langchain>=0.1.16
+langgraph>=0.0.40
+
+# Embeddings & vector memory
+sentence-transformers>=2.6.1
+faiss-cpu>=1.8.0
+
+# Utilities
+python-dotenv>=1.0.1
+PyYAML>=6.0.1
+httpx>=0.27.0
+
+# Optional (for Streamlit deployment)
+streamlit>=1.33.0
+
+# LLM Model 
+langchain-google-genai
+google-generativeai
+

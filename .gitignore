@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Hugging Face / Docker
+.cache/
+hf_space/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Hugging Face / Docker
+.cache/
+hf_space/
