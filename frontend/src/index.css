@@ -1,0 +1,144 @@
+/* ---------- Global ---------- */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  
+  .app-container {
+    max-width: 720px;
+    margin: 40px auto;
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  }
+  
+  h1 {
+    margin-bottom: 24px;
+    font-size: 1.75rem;
+  }
+  
+  /* ---------- Chat Input ---------- */
+  .chat-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    resize: vertical;
+  }
+  
+  textarea:disabled {
+    background-color: #f3f4f6;
+  }
+  
+  button {
+    align-self: flex-end;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    background-color: #2563eb;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+  
+  .input-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+  }
+  
+  /* ---------- Loading ---------- */
+  .loading-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* ---------- Decision Card ---------- */
+  .decision-card {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 6px solid;
+  }
+  
+  .status-accepted {
+    border-color: #16a34a;
+    background-color: #f0fdf4;
+  }
+  
+  .status-rejected {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+  }
+  
+  .status-neutral {
+    border-color: #6b7280;
+    background-color: #f9fafb;
+  }
+  
+  .decision-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  
+  /* ---------- Explanation & Steps ---------- */
+  .triage-steps {
+    margin-top: 24px;
+  }
+  
+  .explanation-text {
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+  
+  .steps-list {
+    margin-top: 12px;
+    padding-left: 20px;
+  }
+  
+  .steps-list li {
+    margin-bottom: 6px;
+  }
+  
+  /* ---------- Error ---------- */
+  .error-box {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border-radius: 8px;
+  }
+  

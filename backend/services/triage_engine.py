@@ -16,6 +16,8 @@ from backend.agents.validator import ValidatorAgent
 from backend.agents.reasoner import ReasonerAgent
 from backend.agents.router import RouterAgent
 from backend.agents.memory import MemoryAgent
+from backend.agents.explainer import ExplainerAgent
+
 
 
 class TriageEngine:
@@ -29,12 +31,15 @@ class TriageEngine:
         self.reasoner = ReasonerAgent(use_llm=use_llm_reasoner)
         self.router = RouterAgent()
         self.memory = MemoryAgent()
+        self.explainer = ExplainerAgent()
+
 
         # Agent registry
         self.agent_registry = {
             "validator": self.validator,
             "reasoner": self.reasoner,
             "router": self.router,
+            "explainer": self.explainer,
             "memory": self.memory,
         }
 
@@ -75,41 +80,42 @@ class TriageEngine:
 
     def _final_response(self, state: Dict) -> Dict:
         """
-        Normalize and shape final API response.
+        Shape final API response.
+        Assumes ExplainerAgent has already produced user-facing output.
         """
 
         validation = state.get("validation", {})
-        reasoning = state.get("reasoning", {})
+        reasoning = state.get("reasoning")
 
-        explanation: List[str] = state.get("explanation", [])
-        steps: List[str] = state.get("steps", [])
+        if not reasoning:
+            raise RuntimeError("Final response missing reasoning")
 
-        # Safety defaults
+        explanation_list = state.get("explanation")
+        steps = state.get("steps")
+
+        if explanation_list is None or steps is None:
+            raise RuntimeError("Final response missing explainer input")
+
+        if not isinstance(explanation_list, list):
+            raise RuntimeError("Explanation must be a list")
+
+        explanation = " ".join(explanation_list)
+
+        if explanation is None or steps is None:
+            raise RuntimeError("Final response missing explainer output")
+
         confidence = reasoning.get("confidence")
         if confidence is None:
-            confidence = 0.5
-
-        if not explanation:
-            explanation.append(
-                "The case was reviewed by the triage system based on the information provided."
-            )
-
-        if not steps:
-            steps.append(
-                "Proceed with the recommended legal route or provide more details if needed."
-            )
+            raise RuntimeError("Final response missing confidence score")
 
         # Rejected case
         if not validation.get("eligible"):
-            explanation.append(
-                validation.get("rejection_reason", "The case is not eligible for triage.")
-            )
-
             return {
                 "status": "REJECTED",
                 "route": None,
+                "domain": reasoning.get("domain"),
                 "confidence": float(confidence),
-                "explanation": " ".join(explanation),
+                "explanation": explanation,
                 "steps": steps,
             }
 
@@ -117,10 +123,12 @@ class TriageEngine:
         return {
             "status": "ACCEPTED",
             "route": state.get("route"),
+            "domain": reasoning.get("domain"),
             "confidence": float(confidence),
-            "explanation": " ".join(explanation),
+            "explanation": explanation,
             "steps": steps,
         }
+
 
 
 _engine = TriageEngine()

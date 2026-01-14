@@ -60,8 +60,8 @@ def triage_case(payload: TriageRequest):
         return result
 
     except Exception as e:
-        # Fail safely – never leak internals
         raise HTTPException(
             status_code=500,
-            detail="An internal error occurred during triage."
-        ) from e
+            detail=str(e)   # 👈 TEMPORARY
+        )
+

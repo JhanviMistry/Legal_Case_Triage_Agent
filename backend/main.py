@@ -13,10 +13,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 from dotenv import load_dotenv
-
+load_dotenv()
 from backend.api import router as triage_router
 
-load_dotenv()
+
 
 # ======================================================
 # App Initialization

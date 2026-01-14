@@ -11,6 +11,7 @@ Responsibility:
 from typing import Dict
 import os
 
+
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
 except ImportError:
@@ -18,98 +19,63 @@ except ImportError:
 
 
 class ReasonerAgent:
-    def __init__(self, use_llm: bool = False):
+    """
+    LLM-FIRST legal reasoning agent.
+    """
+
+    def __init__(self, use_llm: bool = True):
         self.name = "ReasonerAgent"
         self.use_llm = use_llm
 
-        if self.use_llm:
-            if ChatGoogleGenerativeAI is None:
-                raise ImportError(
-                    "langchain-google-genai is required for Gemini reasoning"
-                )
+        if not os.getenv("GEMINI_API_KEY"):
+            raise RuntimeError("GEMINI_API_KEY is required for reasoning")
 
-            self.model = ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",
-                temperature=0.3,
-                google_api_key=os.getenv("GEMINI_API_KEY")
-            )
-
-    def run(self, state: Dict) -> Dict:
-        state.setdefault("explanation", [])
-        state.setdefault("steps", [])
-
-        message = state.get("message", "")
-
-        if self.use_llm:
-            reasoning = self._gemini_reasoning(message)
-            mode = "gemini"
-        else:
-            reasoning = self._deterministic_reasoning(message)
-            mode = "deterministic"
-
-        # ✅ Explain reasoning
-        state["explanation"].append(
-            f"The case was classified under the {reasoning['domain']} domain "
-            f"with confidence {reasoning['confidence']}."
+        self.model = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            temperature=0.2,
+            google_api_key=os.getenv("GEMINI_API_KEY")
         )
 
-        # Optional guidance (NOT routing)
-        if reasoning["domain"] == "UNKNOWN":
-            state["steps"].append(
-                "Provide more details to help classify the legal issue."
-            )
+    def run(self, state: Dict) -> Dict:
+        message = state.get("message", "")
 
-        state["reasoning"] = reasoning
-        state["reasoner_metadata"] = {
-            "agent": self.name,
-            "mode": mode
-        }
-
-        return state
-
-
-    # -------------------------
-    # Deterministic reasoning
-    # -------------------------
-    def _deterministic_reasoning(self, message: str) -> Dict:
-        text = message.lower()
-
-        if any(k in text for k in ["eviction", "landlord", "tenant", "rent"]):
-            domain = "HOUSING"
-            confidence = 0.85
-        elif any(k in text for k in ["job", "fired", "employer", "work"]):
-            domain = "EMPLOYMENT"
-            confidence = 0.85
-        elif any(k in text for k in ["visa", "immigration", "asylum"]):
-            domain = "IMMIGRATION"
-            confidence = 0.85
-        else:
-            domain = "UNKNOWN"
-            confidence = 0.4
+        reasoning = self._llm_reasoning(message)
 
         return {
-            "domain": domain,
-            "confidence": confidence,
-            "summary": f"Detected {domain.lower()} related issue"
+            **state,
+            "reasoning": reasoning,
+            "reasoner_metadata": {
+                "agent": self.name,
+                "mode": "gemini"
+            }
         }
 
-    # -------------------------
-    # Gemini-backed reasoning
-    # -------------------------
-    def _gemini_reasoning(self, message: str) -> Dict:
+    def _llm_reasoning(self, message: str) -> Dict:
         prompt = f"""
-You are a legal intake reasoning agent.
+You are a legal intake reasoning agent for a UK legal advice clinic.
 
-Classify the user's issue into one of:
-- HOUSING
-- EMPLOYMENT
-- IMMIGRATION
-- UNKNOWN
+Your task:
+- Identify the legal domain of the issue
+- Assess confidence in classification
+- Explain why the issue belongs to that domain
+- Identify any missing information
 
-Return STRICT JSON with:
-- domain (string)
-- confidence (number between 0 and 1)
-- summary (one sentence)
+Allowed domains:
+HOUSING, EMPLOYMENT, IMMIGRATION, FAMILY, DEBT, BENEFITS, UNKNOWN
+
+Rules:
+- Do NOT give legal advice
+- Do NOT suggest outcomes
+- Do NOT cite laws
+- ONLY classify and explain reasoning
+
+Return STRICT JSON:
+{{
+  "domain": string,
+  "confidence": number between 0 and 1,
+  "why": string,
+  "missing_info": [string]
+}}
 
 User message:
 \"\"\"{message}\"\"\"
@@ -118,11 +84,11 @@ User message:
         response = self.model.invoke(prompt)
 
         try:
-            import json
             return json.loads(response.content)
         except Exception:
             return {
                 "domain": "UNKNOWN",
                 "confidence": 0.0,
-                "summary": "Gemini response could not be parsed"
+                "why": "The system could not reliably classify the issue.",
+                "missing_info": ["Clarify the legal issue and location"]
             }
