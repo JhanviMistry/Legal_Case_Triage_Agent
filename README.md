@@ -220,7 +220,6 @@ This system **does not provide legal advice**. It performs triage only and is de
 
 **Jhanvi Mistry**
 MSc Computer Science
-Agentic AI • Legal Tech • Explainable Systems
 
 ---
 
