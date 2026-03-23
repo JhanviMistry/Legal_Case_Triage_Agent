@@ -2,6 +2,12 @@
 
 An **agentic, explainable legal case triage system** designed for legal advice centres (e.g. Queen Mary Legal Advice Centre). The system automatically validates, classifies, routes, and explains legal enquiries while maintaining **auditability, transparency, and legal-team readiness**.
 
+<img width="1460" height="752" alt="image" src="https://github.com/user-attachments/assets/abbb0265-0019-4c4d-bbd3-7a5150ebb4c8" />
+
+<img width="1414" height="771" alt="image" src="https://github.com/user-attachments/assets/0023d5c4-838b-4ed9-b27f-292c86d1cb22" />
+
+
+
 ---
 
 ## 🚀 Project Overview
